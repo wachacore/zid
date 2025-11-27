@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Z ID — Уникальный идентификатор</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --primary: #6366f1;
+      --dice: #94a3b8;
+      --dice-hover: #64748b;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --border: #334155;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      min-height: 100vh;
+      transition: background-color 0.3s;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+
+    h1, h2 {
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+      text-align: center;
+      color: var(--primary);
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 8px;
+      font-weight: 600;
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    /* Кнопка-кость 🎲 */
+    .dice-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      background: var(--dice);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .dice-btn:hover {
+      background: var(--dice-hover);
+    }
+
+    .dice-btn:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+
+    .error {
+      color: var(--error);
+      font-size: 14px;
+      margin-top: -12px;
+      margin-bottom: 12px;
+    }
+
+    .success {
+      color: var(--success);
+      font-size: 14px;
+      margin-top: -12px;
+      margin-bottom: 12px;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      margin-top: 16px;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .profile-info {
+      line-height: 1.6;
+    }
+
+    .profile-info p {
+      margin: 8px 0;
+    }
+
+    .profile-info strong {
+      margin-right: 8px;
+      color: var(--primary);
+    }
+
+    .notice {
+      background: rgba(99, 102, 241, 0.1);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      margin-top: 16px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 8px 16px;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .accounts-badge {
+      background: var(--primary);
+      color: white;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: 6px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    /* Анимация кости */
+    @keyframes spin {
+      0% { transform: translateY(-50%) rotate(0deg); }
+      100% { transform: translateY(-50%) rotate(360deg); }
+    }
+    .dice-spin {
+      animation: spin 0.5s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Auth Screens -->
+    <div id="authScreen" class="card">
+      <h1>Z ID</h1>
+      <p style="text-align:center; margin-bottom:24px; color:#64748b">
+        Уникальный 10-значный идентификатор для всех ваших проектов
+      </p>
+
+      <!-- Switcher -->
+      <div class="tabs">
+        <button class="tab active" data-view="login">Вход</button>
+        <button class="tab" data-view="register">Регистрация</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginView">
+        <label for="loginZID">Z ID (10 цифр)</label>
+        <input type="text" id="loginZID" placeholder="1943228567" maxlength="10" inputmode="numeric" />
+
+        <label for="loginPass">Пароль</label>
+        <input type="password" id="loginPass" placeholder="••••••••" />
+
+        <div id="loginError" class="error hidden"></div>
+        <button id="btnLogin">Войти</button>
+      </div>
+
+      <!-- Registration Form -->
+      <div id="registerView" class="hidden">
+        <label for="regName">Имя</label>
+        <input type="text" id="regName" placeholder="Александр" required />
+
+        <label for="regSurname">Фамилия</label>
+        <input type="text" id="regSurname" placeholder="Иванов" required />
+
+        <label for="regPatronymic">Отчество</label>
+        <input type="text" id="regPatronymic" placeholder="Сергеевич" required />
+
+        <label for="regZID">Z ID (10 цифр)</label>
+        <div class="input-group">
+          <input type="text" id="regZID" placeholder="1943228567" maxlength="10" inputmode="numeric" required />
+          <button class="dice-btn" id="diceBtn" title="Сгенерировать свободный Z ID">🎲</button>
+        </div>
+        <div class="notice">
+          🔢 Только цифры. Каждая — не более 3 раз.  
+          <br>✅ Уникальность гарантируется: никто не получит ваш Z ID.
+        </div>
+        <div id="zidError" class="error hidden"></div>
+
+        <label for="regPass">Пароль (8–20 символов)</label>
+        <input type="password" id="regPass" placeholder="••••••••" minlength="8" maxlength="20" required />
+        <div id="passError" class="error hidden"></div>
+
+        <label for="regBirth">Дата рождения</label>
+        <input type="date" id="regBirth" required />
+
+        <label for="regNationality">Национальность</label>
+        <select id="regNationality" required></select>
+
+        <label>Пол</label>
+        <div style="display:flex;gap:16px;margin-bottom:16px">
+          <label><input type="radio" name="gender" value="male" required /> Мужской</label>
+          <label><input type="radio" name="gender" value="female" /> Женский</label>
+          <label><input type="radio" name="gender" value="other" /> Другой</label>
+        </div>
+
+        <div id="regError" class="error hidden"></div>
+        <button id="btnRegister">Зарегистрироваться</button>
+      </div>
+    </div>
+
+    <!-- Profile Screen -->
+    <div id="profileScreen" class="card hidden">
+      <div class="tabs">
+        <button class="tab active" data-tab="info">Профиль</button>
+        <button class="tab" data-tab="password">Пароль</button>
+        <button class="tab" data-tab="export">Экспорт</button>
+        <button class="tab" data-tab="logout">Выход</button>
+      </div>
+
+      <div id="tabInfo">
+        <h2>Ваш профиль</h2>
+        <div class="profile-info">
+          <p><strong>Z ID:</strong> <span id="pZID"></span></p>
+          <p><strong>Имя:</strong> <span id="pName"></span></p>
+          <p><strong>Фамилия:</strong> <span id="pSurname"></span></p>
+          <p><strong>Отчество:</strong> <span id="pPatronymic"></span></p>
+          <p><strong>Дата рождения:</strong> <span id="pBirth"></span></p>
+          <p><strong>Национальность:</strong> <span id="pNationality"></span></p>
+          <p><strong>Пол:</strong> <span id="pGender"></span></p>
+        </div>
+        <div class="notice">
+          💡 Этот Z ID сохранён в <code>localStorage</code>.  
+          Вы можете использовать его в любых будущих проектах.
+        </div>
+        <br>
+        <button onclick="showAccounts()">Мои аккаунты <span class="accounts-badge" id="accountsCount">0</span></button>
+      </div>
+
+      <div id="tabPassword" class="hidden">
+        <h2>Смена пароля</h2>
+        <label for="oldPass">Старый пароль</label>
+        <input type="password" id="oldPass" placeholder="••••••••" />
+
+        <label for="newPass">Новый пароль (8–20 символов)</label>
+        <input type="password" id="newPass" placeholder="••••••••" minlength="8" maxlength="20" />
+
+        <label for="newPass2">Повторите новый пароль</label>
+        <input type="password" id="newPass2" placeholder="••••••••" />
+
+        <div id="passChangeError" class="error hidden"></div>
+        <div id="passChangeSuccess" class="success hidden"></div>
+        <button id="btnChangePass">Сохранить</button>
+      </div>
+
+      <div id="tabExport" class="hidden">
+        <h2>Экспорт данных</h2>
+        <p>Сохраните этот JSON — он содержит ваш профиль.</p>
+        <div class="notice">📁 Вы можете использовать этот файл для восстановления.</div>
+        <textarea id="exportArea" rows="8" readonly style="font-family:monospace; font-size:14px"></textarea>
+        <button onclick="copyExport()">Копировать JSON</button>
+        <div id="copyStatus" class="success" style="display:none">✅ Скопировано!</div>
+      </div>
+
+      <div id="tabLogout" class="hidden">
+        <h2>Выход</h2>
+        <p>Вы уверены?</p>
+        <button id="btnConfirmLogout" style="background:var(--error)">Выйти</button>
+      </div>
+
+      <!-- Модальное окно аккаунтов -->
+      <div id="accountsModal" class="hidden">
+        <h2>Мои аккаунты</h2>
+        <div id="accountsList"></div>
+        <button onclick="closeAccountsModal()" style="margin-top:16px">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Z ID System • Все данные хранятся только в вашем браузере<br>
+    GitHub Pages Edition — 100% клиентский, без сервера
+  </footer>
+
+  <script>
+    // === ДАННЫЕ ===
+    const NATIONALITIES = [
+      "Русский", "Украинец", "Белорус", "Татарин", "Чеченец", "Армянин", "Грузин", "Азербайджанец", "Казах", "Узбек",
+      "Немец", "Француз", "Итальянец", "Испанец", "Англичанин", "Поляк", "Чех", "Венгр", "Японец", "Американец"
+    ];
+
+    // === ИНИЦИАЛИЗАЦИЯ ===
+    document.addEventListener('DOMContentLoaded', () => {
+      initNationalities();
+      bindEvents();
+      updateAccountsCount();
+
+      // Проверка: есть ли текущий аккаунт?
+      const currentZID = localStorage.getItem('currentZID');
+      if (currentZID && localStorage.getItem(`zid_${currentZID}`)) {
+        showProfile(currentZID);
+      }
+    });
+
+    function initNationalities() {
+      const select = document.getElementById('regNationality');
+      NATIONALITIES.forEach(nat => {
+        const opt = document.createElement('option');
+        opt.value = nat;
+        opt.textContent = nat;
+        select.appendChild(opt);
+      });
+      select.value = 'Русский';
+    }
+
+    function bindEvents() {
+      // Вкладки
+      document.querySelectorAll('.tab[data-view]').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.tab[data-view]').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          document.querySelectorAll('[id$="View"]').forEach(el => el.classList.add('hidden'));
+          document.getElementById(tab.dataset.view + 'View').classList.remove('hidden');
+        });
+      });
+
+      // Кнопки
+      document.getElementById('btnLogin').addEventListener('click', handleLogin);
+      document.getElementById('btnRegister').addEventListener('click', handleRegister);
+      document.getElementById('btnChangePass').addEventListener('click', handleChangePassword);
+      document.getElementById('btnConfirmLogout').addEventListener('click', handleLogout);
+
+      // Кость 🎲
+      document.getElementById('diceBtn').addEventListener('click', generateFreeZID);
+
+      // Вкладки профиля
+      document.querySelectorAll('.tab[data-tab]').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.tab[data-tab]').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          document.querySelectorAll('[id^="tab"]').forEach(el => el.classList.add('hidden'));
+          document.getElementById(`tab${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}`).classList.remove('hidden');
+          if (tab.dataset.tab === 'export') {
+            generateExport();
+          }
+        });
+      });
+
+      // Z ID ввод
+      document.getElementById('regZID').addEventListener('input', validateZIDInput);
+      document.getElementById('regPass').addEventListener('input', validatePasswordInput);
+    }
+
+    // === ГЕНЕРАЦИЯ СВОБОДНОГО Z ID (с уникальностью!) ===
+    function generateZID() {
+      // Генерирует Z ID по правилам: 10 цифр, каждая ≤3 раз
+      let zid;
+      do {
+        zid = '';
+        const counts = {};
+        for (let i = 0; i < 10; i++) {
+          let d;
+          do {
+            d = Math.floor(Math.random() * 10).toString();
+          } while (counts[d] >= 3);
+          zid += d;
+          counts[d] = (counts[d] || 0) + 1;
+        }
+      } while (zid.length !== 10);
+      return zid;
+    }
+
+    function isZIDFree(zid) {
+      // Проверяем: не занят ли уже в localStorage?
+      for (let key in localStorage) {
+        if (key.startsWith('zid_') && key !== 'currentZID') {
+          try {
+            const acc = JSON.parse(localStorage.getItem(key));
+            if (acc.zid === zid) return false;
+          } catch (e) {}
+        }
+      }
+      return true;
+    }
+
+    async function generateFreeZID() {
+      const btn = document.getElementById('diceBtn');
+      btn.classList.add('dice-spin');
+      btn.disabled = true;
+
+      // Генерируем, пока не найдём свободный
+      let attempts = 0;
+      let zid;
+      do {
+        zid = generateZID();
+        attempts++;
+        if (attempts > 1000) break; // защита от зацикливания
+      } while (!isZIDFree(zid));
+
+      document.getElementById('regZID').value = zid;
+      validateZIDInput();
+
+      setTimeout(() => {
+        btn.classList.remove('dice-spin');
+        btn.disabled = false;
+      }, 500);
+    }
+
+    // === ВАЛИДАЦИЯ ===
+    function validateZID(zid) {
+      if (zid.length !== 10 || !/^\d{10}$/.test(zid)) {
+        return { valid: false, message: 'Z ID должен содержать ровно 10 цифр' };
+      }
+      const counts = {};
+      for (let d of zid) {
+        counts[d] = (counts[d] || 0) + 1;
+        if (counts[d] > 3) {
+          return { valid: false, message: 'Цифра не может повторяться более 3 раз' };
+        }
+      }
+      return { valid: true };
+    }
+
+    function validateZIDInput() {
+      const input = document.getElementById('regZID');
+      const zid = input.value.replace(/\D/g, '');
+      input.value = zid;
+      const err = document.getElementById('zidError');
+      const res = validateZID(zid);
+      if (!res.valid) {
+        err.textContent = res.message;
+        err.classList.remove('hidden');
+      } else {
+        err.classList.add('hidden');
+      }
+    }
+
+    function validatePasswordInput() {
+      const pass = document.getElementById('regPass').value;
+      const err = document.getElementById('passError');
+      if (pass.length < 8 || pass.length > 20) {
+        err.textContent = 'Пароль должен быть 8–20 символов';
+        err.classList.remove('hidden');
+      } else {
+        err.classList.add('hidden');
+      }
+    }
+
+    // === ХЭШИРОВАНИЕ (PBKDF2 через Web Crypto) ===
+    async function hashPassword(password, salt = null) {
+      if (!salt) {
+        const arr = new Uint8Array(32);
+        crypto.getRandomValues(arr);
+        salt = Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');
+      }
+
+      const enc = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        'raw', enc.encode(password), { name: 'PBKDF2' }, false, ['deriveBits']
+      );
+
+      const bits = await crypto.subtle.deriveBits({
+        name: 'PBKDF2',
+        salt: enc.encode(salt),
+        iterations: 100000,
+        hash: 'SHA-256'
+      }, key, 256);
+
+      const hashArr = Array.from(new Uint8Array(bits));
+      const hashHex = hashArr.map(b => b.toString(16).padStart(2, '0')).join('');
+      return { hash: hashHex, salt };
+    }
+
+    // === РЕГИСТРАЦИЯ ===
+    async function handleRegister() {
+      const name = document.getElementById('regName').value.trim();
+      const surname = document.getElementById('regSurname').value.trim();
+      const patronymic = document.getElementById('regPatronymic').value.trim();
+      const zid = document.getElementById('regZID').value.trim();
+      const pass = document.getElementById('regPass').value;
+      const birth = document.getElementById('regBirth').value;
+      const nationality = document.getElementById('regNationality').value;
+      const genderEl = document.querySelector('input[name="gender"]:checked');
+      const gender = genderEl ? genderEl.value : '';
+
+      if (!name || !surname || !patronymic || !zid || !pass || !birth || !nationality || !gender) {
+        showError('regError', 'Заполните все поля');
+        return;
+      }
+
+      const zidCheck = validateZID(zid);
+      if (!zidCheck.valid) {
+        showError('zidError', zidCheck.message);
+        return;
+      }
+
+      if (pass.length < 8 || pass.length > 20) {
+        showError('passError', 'Пароль должен быть 8–20 символов');
+        return;
+      }
+
+      // 🔒 ГАРАНТИЯ УНИКАЛЬНОСТИ: проверяем локально
+      if (!isZIDFree(zid)) {
+        showError('zidError', 'Этот Z ID уже занят. Нажмите 🎲 для нового.');
+        return;
+      }
+
+      // Хэширование
+      const { hash, salt } = await hashPassword(pass);
+
+      const account = {
+        zid,
+        name,
+        surname,
+        patronymic,
+        password_hash: hash,
+        salt,
+        birth_date: birth,
+        nationality,
+        gender: ({male: 'Мужской', female: 'Женский', other: 'Другой'})[gender],
+        created_at: new Date().toISOString()
+      };
+
+      // Сохраняем в localStorage
+      localStorage.setItem(`zid_${zid}`, JSON.stringify(account));
+      localStorage.setItem('currentZID', zid);
+
+      showProfile(zid);
+    }
+
+    // === ВХОД ===
+    async function handleLogin() {
+      const zid = document.getElementById('loginZID').value.trim();
+      const pass = document.getElementById('loginPass').value;
+
+      if (!zid || !pass) {
+        showError('loginError', 'Введите Z ID и пароль');
+        return;
+      }
+
+      const accountJSON = localStorage.getItem(`zid_${zid}`);
+      if (!accountJSON) {
+        showError('loginError', 'Аккаунт не найден');
+        return;
+      }
+
+      const account = JSON.parse(accountJSON);
+      const { hash } = await hashPassword(pass, account.salt);
+
+      if (hash !== account.password_hash) {
+        showError('loginError', 'Неверный пароль');
+        return;
+      }
+
+      localStorage.setItem('currentZID', zid);
+      showProfile(zid);
+    }
+
+    // === ПРОФИЛЬ ===
+    function showProfile(zid) {
+      const accountJSON = localStorage.getItem(`zid_${zid}`);
+      if (!accountJSON) {
+        localStorage.removeItem('currentZID');
+        renderView('login');
+        return;
+      }
+
+      const acc = JSON.parse(accountJSON);
+      document.getElementById('pZID').textContent = acc.zid;
+      document.getElementById('pName').textContent = acc.name;
+      document.getElementById('pSurname').textContent = acc.surname;
+      document.getElementById('pPatronymic').textContent = acc.patronymic;
+      document.getElementById('pBirth').textContent = new Date(acc.birth_date).toLocaleDateString('ru-RU');
+      document.getElementById('pNationality').textContent = acc.nationality;
+      document.getElementById('pGender').textContent = acc.gender;
+
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('profileScreen').classList.remove('hidden');
+      updateAccountsCount();
+    }
+
+    // === СМЕНА ПАРОЛЯ ===
+    async function handleChangePassword() {
+      const zid = localStorage.getItem('currentZID');
+      const account = JSON.parse(localStorage.getItem(`zid_${zid}`));
+
+      const oldPass = document.getElementById('oldPass').value;
+      const newPass = document.getElementById('newPass').value;
+      const newPass2 = document.getElementById('newPass2').value;
+      const errEl = document.getElementById('passChangeError');
+      const okEl = document.getElementById('passChangeSuccess');
+
+      if (newPass !== newPass2) {
+        showErrorEl(errEl, 'Пароли не совпадают');
+        return;
+      }
+
+      if (newPass.length < 8 || newPass.length > 20) {
+        showErrorEl(errEl, 'Новый пароль должен быть 8–20 символов');
+        return;
+      }
+
+      const { hash } = await hashPassword(oldPass, account.salt);
+      if (hash !== account.password_hash) {
+        showErrorEl(errEl, 'Старый пароль неверен');
+        return;
+      }
+
+      // Обновляем
+      const { hash: newHash, salt: newSalt } = await hashPassword(newPass);
+      account.password_hash = newHash;
+      account.salt = newSalt;
+      localStorage.setItem(`zid_${zid}`, JSON.stringify(account));
+
+      showSuccessEl(okEl, '✅ Пароль изменён');
+      setTimeout(() => okEl.classList.add('hidden'), 2000);
+    }
+
+    // === ЭКСПОРТ ===
+    function generateExport() {
+      const zid = localStorage.getItem('currentZID');
+      const account = JSON.parse(localStorage.getItem(`zid_${zid}`));
+      if (!account) return;
+
+      const data = {
+        zid: account.zid,
+        name: account.name,
+        surname: account.surname,
+        patronymic: account.patronymic,
+        birth_date: account.birth_date,
+        nationality: account.nationality,
+        gender: account.gender,
+        created_at: account.created_at
+        // ❗ пароль НЕ экспортируется — безопасность!
+      };
+
+      document.getElementById('exportArea').value = JSON.stringify(data, null, 2);
+    }
+
+    function copyExport() {
+      const textarea = document.getElementById('exportArea');
+      textarea.select();
+      document.execCommand('copy');
+      const status = document.getElementById('copyStatus');
+      status.style.display = 'block';
+      setTimeout(() => status.style.display = 'none', 2000);
+    }
+
+    // === УТИЛИТЫ ===
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      el.classList.add('error');
+    }
+
+    function showErrorEl(el, msg) {
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      el.classList.add('error');
+    }
+
+    function showSuccessEl(el, msg) {
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      el.classList.remove('error');
+      el.classList.add('success');
+    }
+
+    function renderView(view) {
+      document.querySelectorAll('.tab[data-view]').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tab[data-view="${view}"]`)?.classList.add('active');
+      document.querySelectorAll('[id$="View"]').forEach(el => el.classList.add('hidden'));
+      document.getElementById(view + 'View')?.classList.remove('hidden');
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('currentZID');
+      renderView('login');
+      document.getElementById('profileScreen').classList.add('hidden');
+      document.getElementById('authScreen').classList.remove('hidden');
+    }
+
+    // === УПРАВЛЕНИЕ АККАУНТАМИ ===
+    function updateAccountsCount() {
+      let count = 0;
+      for (let key in localStorage) {
+        if (key.startsWith('zid_') && key !== 'currentZID') count++;
+      }
+      document.getElementById('accountsCount').textContent = count;
+    }
+
+    function showAccounts() {
+      let html = '<ul style="list-style:none; padding:0">';
+      let count = 0;
+      for (let key in localStorage) {
+        if (key.startsWith('zid_') && key !== 'currentZID') {
+          try {
+            const acc = JSON.parse(localStorage.getItem(key));
+            html += `<li style="margin:12px 0; padding-bottom:12px; border-bottom:1px solid var(--border);">
+              <strong>${acc.zid}</strong><br>
+              ${acc.name} ${acc.surname}<br>
+              <button onclick="switchTo('${acc.zid}')" style="margin-top:6px; padding:6px 12px">Войти</button>
+              <button onclick="deleteAccount('${acc.zid}')" style="margin-left:8px; padding:6px 12px; background:var(--error)">Удалить</button>
+            </li>`;
+            count++;
+          } catch (e) {}
+        }
+      }
+      if (count === 0) {
+        html += '<li>Нет сохранённых аккаунтов</li>';
+      }
+      html += '</ul>';
+
+      document.getElementById('accountsList').innerHTML = html;
+      document.getElementById('accountsModal').classList.remove('hidden');
+    }
+
+    function closeAccountsModal() {
+      document.getElementById('accountsModal').classList.add('hidden');
+    }
+
+    function switchTo(zid) {
+      localStorage.setItem('currentZID', zid);
+      closeAccountsModal();
+      showProfile(zid);
+    }
+
+    function deleteAccount(zid) {
+      if (confirm(`Удалить аккаунт ${zid}? Это нельзя отменить.`)) {
+        localStorage.removeItem(`zid_${zid}`);
+        if (localStorage.getItem('currentZID') === zid) {
+          localStorage.removeItem('currentZID');
+        }
+        showAccounts();
+        updateAccountsCount();
+      }
+    }
+  </script>
+</body>
+</html>
