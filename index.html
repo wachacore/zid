@@ -155,13 +155,6 @@
       margin-bottom: 12px;
     }
 
-    .success {
-      color: var(--success);
-      font-size: 14px;
-      margin-top: -12px;
-      margin-bottom: 12px;
-    }
-
     @keyframes spin {
       0% { transform: translateY(-50%) rotate(0deg); }
       100% { transform: translateY(-50%) rotate(360deg); }
@@ -215,10 +208,6 @@
           <option value="Украинец">Украинец</option>
           <option value="Белорус">Белорус</option>
           <option value="Американец">Американец</option>
-          <option value="Немец">Немец</option>
-          <option value="Француз">Француз</option>
-          <option value="Китаец">Китаец</option>
-          <option value="Японец">Японец</option>
         </select>
 
         <label>Пол</label>
@@ -248,41 +237,38 @@
 
   <script>
     // === 🔑 ВАШ GIST ID (замените на свой!) ===
-    const GIST_ID = "ec54500e71d26ef32bab5a0febb8aada"; // ← ОБЯЗАТЕЛЬНО замените на ваш ID
+    const GIST_ID = "abc123def45678901234"; // ← ОБЯЗАТЕЛЬНО замените на ваш ID
 
-    // === Глобальное состояние ===
     let accounts = [];
 
-    // === Инициализация ===
     document.addEventListener('DOMContentLoaded', () => {
       bindEvents();
       loadAccounts();
     });
 
     function bindEvents() {
-      // Вкладки
+      // ✅ ИСПРАВЛЕНО: переключение по data-tab
       document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
+          // Снимаем active со всех
           document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          // Добавляем active нажатой
           tab.classList.add('active');
+          // Прячем все вкладки
           document.querySelectorAll('[id^="tab"]').forEach(el => el.classList.add('hidden'));
-          document.getElementById('tab' + tab.textContent).classList.remove('hidden');
+          // Показываем нужную по data-tab
+          const target = tab.dataset.tab; // ← register или login
+          document.getElementById('tab' + target.charAt(0).toUpperCase() + target.slice(1)).classList.remove('hidden');
         });
       });
 
-      // Кость 🎲
       document.getElementById('diceBtn').addEventListener('click', generateValidZID);
-
-      // Регистрация / вход
       document.getElementById('btnRegister').addEventListener('click', handleRegister);
       document.getElementById('btnLogin').addEventListener('click', handleLogin);
-
-      // Валидация в реальном времени
       document.getElementById('regZID').addEventListener('input', validateZIDInput);
       document.getElementById('regPass').addEventListener('input', validatePasswordInput);
     }
 
-    // === ВАЛИДАЦИЯ Z ID ===
     function validateZID(zid) {
       if (zid.length !== 10 || !/^\d{10}$/.test(zid)) {
         return { valid: false, message: 'Z ID должен содержать ровно 10 цифр' };
@@ -322,7 +308,6 @@
       }
     }
 
-    // === ГЕНЕРАЦИЯ ВАЛИДНОГО Z ID ===
     function generateZID() {
       let zid;
       do {
@@ -365,7 +350,6 @@
       }, 500);
     }
 
-    // === ХЭШИРОВАНИЕ (Web Crypto API) ===
     async function hashPassword(password, salt = null) {
       if (!salt) {
         const arr = new Uint8Array(32);
@@ -390,7 +374,6 @@
       return { hash: hashHex, salt };
     }
 
-    // === РАБОТА С GIST ===
     async function loadAccounts() {
       try {
         const res = await fetch(`https://gist.githubusercontent.com/ваш-ник/${GIST_ID}/raw/zid-users.json`);
@@ -402,7 +385,6 @@
     }
 
     async function saveAccountsToGist(pat, newAccount) {
-      // Добавляем новый аккаунт
       accounts.push(newAccount);
 
       const updateData = {
@@ -428,7 +410,6 @@
       return res.ok;
     }
 
-    // === РЕГИСТРАЦИЯ ===
     async function handleRegister() {
       const name = document.getElementById('regName').value.trim();
       const surname = document.getElementById('regSurname').value.trim();
@@ -441,7 +422,6 @@
       const genderEl = document.querySelector('input[name="gender"]:checked');
       const gender = genderEl ? genderEl.value : '';
 
-      // Валидация (браузер частично делает через required, но проверим явно)
       if (!name || !surname || !patronymic || !zid || !pat || !pass || !birth || !nationality || !gender) {
         showError('regError', 'Заполните все поля');
         return;
@@ -463,7 +443,6 @@
         return;
       }
 
-      // Хэшируем пароль
       const { hash, salt } = await hashPassword(pass);
 
       const account = {
@@ -479,23 +458,24 @@
         created_at: new Date().toISOString()
       };
 
-      // Сохраняем в Gist
       try {
         const success = await saveAccountsToGist(pat, account);
         if (!success) throw new Error();
 
-        // Также локально — для быстрого входа
         localStorage.setItem(`zid_${zid}`, JSON.stringify(account));
         localStorage.setItem('currentZID', zid);
 
         alert("✅ Регистрация успешна!");
-        showTab('login');
+        // ✅ ИСПРАВЛЕНО: переключаем вкладку корректно
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelector('.tab[data-tab="login"]').classList.add('active');
+        document.getElementById('tabRegister').classList.add('hidden');
+        document.getElementById('tabLogin').classList.remove('hidden');
       } catch (e) {
         showError('regError', 'Не удалось сохранить в Gist. Проверьте PAT.');
       }
     }
 
-    // === ВХОД ===
     async function handleLogin() {
       const zid = document.getElementById('loginZID').value.trim();
       const pass = document.getElementById('loginPass').value;
@@ -505,7 +485,6 @@
         return;
       }
 
-      // Ищем в глобальном списке (из Gist) или локально
       let account = accounts.find(a => a.zid === zid);
       if (!account) {
         const local = localStorage.getItem(`zid_${zid}`);
@@ -517,7 +496,6 @@
         return;
       }
 
-      // Проверяем пароль
       const { hash } = await hashPassword(pass, account.salt);
       if (hash !== account.password_hash) {
         showError('loginError', 'Неверный пароль');
@@ -526,14 +504,6 @@
 
       localStorage.setItem('currentZID', zid);
       alert(`✅ Добро пожаловать, ${account.name}!`);
-    }
-
-    // === УТИЛИТЫ ===
-    function showTab(tabName) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
-      document.querySelectorAll('[id^="tab"]').forEach(el => el.classList.add('hidden'));
-      document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.remove('hidden');
     }
 
     function showError(id, msg) {
