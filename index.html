@@ -5,164 +5,196 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Z ID</title>
   <style>
-    :root {
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1e293b;
-      --border: #e2e8f0;
-      --primary: #6366f1;
-      --dice: #94a3b8;
-      --dice-hover: #64748b;
-      --error: #ef4444;
-      --success: #10b981;
-    }
+  .zid-profile-card {
+  max-width: 520px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 28px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+.zid-header h2 {
+  font-weight: 700;
+  font-size: 24px;
+  margin-bottom: 24px;
+  color: #4f46e5;
+  text-align: center;
+}
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      padding: 20px;
-      min-height: 100vh;
-    }
+.zid-row {
+  margin-bottom: 20px;
+}
 
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-    }
+.zid-row label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
 
-    .card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-      margin-bottom: 24px;
-      border: 1px solid var(--border);
-    }
+.zid-row input[type="text"],
+.zid-row input[readonly] {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 16px;
+  background: #f8fafc;
+  color: #1e293b;
+}
 
-    h1, h2 {
-      font-weight: 800;
-      margin-bottom: 20px;
-    }
+.zid-row input[readonly] {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
 
-    h1 {
-      font-size: 28px;
-      text-align: center;
-      color: var(--primary);
-    }
+.zid-highlight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
 
-    label {
-      display: block;
-      margin: 16px 0 8px;
-      font-weight: 600;
-    }
+.zid-code {
+  padding: 10px 16px;
+  background: #0f172a;
+  color: #60a5fa;
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 8px;
+  letter-spacing: 2px;
+  min-width: 200px;
+  text-align: center;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
 
-    .input-group {
-      position: relative;
-    }
+.zid-copy-btn {
+  padding: 10px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
 
-    input, select, button {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--card);
-      color: var(--text);
-      font-size: 16px;
-    }
+.zid-copy-btn:hover {
+  background: #2563eb;
+}
 
-    input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-    }
+.zid-notice {
+  background: #fffbeb;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 8px;
+  animation: pulse 2s infinite;
+}
 
-    .dice-btn {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 36px;
-      height: 36px;
-      background: var(--dice);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-    }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+}
 
-    .dice-btn:hover {
-      background: var(--dice-hover);
-    }
+.zid-btn, .zid-btn-secondary {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-size: 16px;
+  transition: opacity 0.2s;
+}
 
-    .dice-btn:active {
-      transform: translateY(-50%) scale(0.95);
-    }
+.zid-btn {
+  background: #4f46e5;
+  color: white;
+}
 
-    button {
-      background: var(--primary);
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      margin-top: 16px;
-      transition: opacity 0.2s;
-    }
+.zid-btn:hover {
+  opacity: 0.9;
+}
 
-    button:hover {
-      opacity: 0.9;
-    }
+.zid-btn-secondary {
+  background: #e2e8f0;
+  color: #475569;
+}
 
-    .tabs {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
+.zid-password-section {
+  position: relative;
+}
 
-    .tab {
-      padding: 8px 16px;
-      background: transparent;
-      border: none;
-      border-radius: 8px;
-      color: var(--text);
-      cursor: pointer;
-      font-weight: 500;
-    }
+.zid-password-section label {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
-    .tab.active {
-      background: var(--primary);
-      color: white;
-    }
+.zid-password-section button {
+  margin-top: 28px;
+}
 
-    .hidden {
-      display: none;
-    }
+/* Модальное окно смены пароля */
+#passwordModal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
 
-    .error {
-      color: var(--error);
-      font-size: 14px;
-      margin-top: -12px;
-      margin-bottom: 12px;
-    }
+#passwordModalContent {
+  background: white;
+  padding: 28px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
 
-    @keyframes spin {
-      0% { transform: translateY(-50%) rotate(0deg); }
-      100% { transform: translateY(-50%) rotate(360deg); }
-    }
-    .dice-spin {
-      animation: spin 0.5s ease-out;
-    }
-  </style>
+#passwordModal h3 {
+  margin-bottom: 20px;
+  color: #1e293b;
+}
+
+#passwordModal input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+}
+
+#passwordModal .error {
+  color: #ef4444;
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+#passwordModal .success {
+  color: #10b981;
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+#passwordModal button {
+  width: 100%;
+  margin-top: 12px;
+}
+</style>
 </head>
 <body>
   <div class="container">
@@ -235,283 +267,269 @@
     </div>
   </div>
 
+  <div id="profileMenu" class="zid-profile-card">
+  <div class="zid-header">
+    <h2>Мой профиль</h2>
+  </div>
+
+  <div class="zid-row">
+    <label>Личный идентификатор (Z ID)</label>
+    <div class="zid-highlight">
+      <code id="displayZID" class="zid-code">1943228567</code>
+      <button id="copyZIDBtn" class="zid-copy-btn" title="Скопировать Z ID">📋 Копировать</button>
+    </div>
+    <div class="zid-notice">
+      ⚠️ <strong>Обязательно запомните или скопируйте этот Z ID!</strong><br>
+      Он нужен для входа в будущих проектах. Без него восстановить аккаунт невозможно.
+    </div>
+  </div>
+
+  <!-- Редактируемые поля -->
+  <div class="zid-row">
+    <label>Имя</label>
+    <input type="text" id="editName" value="Александр" />
+  </div>
+  <div class="zid-row">
+    <label>Фамилия</label>
+    <input type="text" id="editSurname" value="Иванов" />
+  </div>
+  <div class="zid-row">
+    <label>Отчество</label>
+    <input type="text" id="editPatronymic" value="Сергеевич" />
+  </div>
+  <div class="zid-row">
+    <label>Дата рождения</label>
+    <input type="text" id="displayBirth" value="15.05.1990" readonly />
+  </div>
+  <div class="zid-row">
+    <label>Национальность</label>
+    <input type="text" id="displayNationality" value="Русский" readonly />
+  </div>
+  <div class="zid-row">
+    <label>Пол</label>
+    <input type="text" id="displayGender" value="Мужской" readonly />
+  </div>
+
+  <!-- Смена пароля -->
+  <div class="zid-row zid-password-section">
+    <label>Пароль</label>
+    <button id="changePassBtn" class="zid-btn-secondary">Изменить пароль</button>
+  </div>
+
+  <!-- Экспорт -->
+  <div class="zid-row">
+    <label>Резервная копия</label>
+    <button id="exportBtn" class="zid-btn">Сохранить в JSON</button>
+  </div>
+</div>
+
   <script>
-    // === 🔑 ВАШ GIST ID (замените на свой!) ===
-    const GIST_ID = "ec54500e71d26ef32bab5a0febb8aada"; // ← ОБЯЗАТЕЛЬНО замените на ваш ID
+// ======= НАЧАЛО СКРИПТА (вставьте перед </body> или в отдельный <script>) =======
 
-    let accounts = [];
+// 🔑 Gist ID — измените при необходимости
+const gistId = "YOUR_GIST_ID_HERE"; // ← здесь можно хранить ID для будущей синхронизации
 
-    document.addEventListener('DOMContentLoaded', () => {
-      bindEvents();
-      loadAccounts();
+// Загрузка данных из localStorage
+function loadProfile() {
+  const currentZID = localStorage.getItem('currentZID');
+  if (!currentZID) {
+    alert('Аккаунт не найден. Пожалуйста, войдите.');
+    window.location.href = '/'; // или ваша страница входа
+    return;
+  }
+
+  const accountJSON = localStorage.getItem(`zid_${currentZID}`);
+  if (!accountJSON) {
+    alert('Данные профиля повреждены.');
+    localStorage.removeItem('currentZID');
+    return;
+  }
+
+  const acc = JSON.parse(accountJSON);
+
+  // Отображение данных
+  document.getElementById('displayZID').textContent = acc.zid;
+  document.getElementById('editName').value = acc.name;
+  document.getElementById('editSurname').value = acc.surname;
+  document.getElementById('editPatronymic').value = acc.patronymic;
+  document.getElementById('displayBirth').value = new Date(acc.birth_date).toLocaleDateString('ru-RU');
+  document.getElementById('displayNationality').value = acc.nationality;
+  document.getElementById('displayGender').value = acc.gender;
+
+  // Привязка обработчиков
+  setupEventListeners(acc.zid);
+}
+
+// Настройка обработчиков
+function setupEventListeners(zid) {
+  // Копирование Z ID
+  document.getElementById('copyZIDBtn').addEventListener('click', () => {
+    const zidCode = document.getElementById('displayZID').textContent;
+    navigator.clipboard.writeText(zidCode).then(() => {
+      const btn = document.getElementById('copyZIDBtn');
+      btn.textContent = '✅ Скопировано!';
+      setTimeout(() => {
+        btn.textContent = '📋 Копировать';
+      }, 2000);
+    }).catch(err => {
+      console.error('Не удалось скопировать:', err);
+      alert('Не получилось скопировать. Выделите и нажмите Ctrl+C.');
+    });
+  });
+
+  // Сохранение изменений в ФИО
+  ['editName', 'editSurname', 'editPatronymic'].forEach(id => {
+    document.getElementById(id).addEventListener('blur', () => saveProfile(zid));
+  });
+
+  // Кнопка "Изменить пароль"
+  document.getElementById('changePassBtn').addEventListener('click', () => showPasswordModal(zid));
+
+  // Кнопка "Экспорт в JSON"
+  document.getElementById('exportBtn').addEventListener('click', () => exportProfile(zid));
+}
+
+// Сохранение ФИО (без замены Z ID, даты и т.д.)
+function saveProfile(zid) {
+  const accountJSON = localStorage.getItem(`zid_${zid}`);
+  if (!accountJSON) return;
+
+  const acc = JSON.parse(accountJSON);
+  acc.name = document.getElementById('editName').value.trim();
+  acc.surname = document.getElementById('editSurname').value.trim();
+  acc.patronymic = document.getElementById('editPatronymic').value.trim();
+
+  localStorage.setItem(`zid_${zid}`, JSON.stringify(acc));
+  console.log('✅ Профиль обновлён');
+}
+
+// Экспорт в JSON (без пароля!)
+function exportProfile(zid) {
+  const accountJSON = localStorage.getItem(`zid_${zid}`);
+  if (!accountJSON) return;
+
+  const acc = JSON.parse(accountJSON);
+  
+  // Безопасный экспорт — НЕ включаем пароль и соль!
+  const safeData = {
+    zid: acc.zid,
+    name: acc.name,
+    surname: acc.surname,
+    patronymic: acc.patronymic,
+    birth_date: acc.birth_date,
+    nationality: acc.nationality,
+    gender: acc.gender,
+    created_at: acc.created_at,
+    exported_at: new Date().toISOString()
+  };
+
+  const jsonStr = JSON.stringify(safeData, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `zid_${acc.zid}_backup.json`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
+}
+
+// Модальное окно смены пароля
+function showPasswordModal(zid) {
+  const modalHTML = `
+    <div id="passwordModal">
+      <div id="passwordModalContent">
+        <h3>Смена пароля</h3>
+        <input type="password" id="oldPass" placeholder="Текущий пароль" />
+        <input type="password" id="newPass" placeholder="Новый пароль (8–20)" minlength="8" maxlength="20" />
+        <input type="password" id="newPass2" placeholder="Повторите новый пароль" />
+        <div id="passError" class="error"></div>
+        <div id="passSuccess" class="success"></div>
+        <button id="savePassBtn">Сохранить</button>
+        <button id="cancelPassBtn" style="background:#e2e8f0;color:#475569;margin-top:8px">Отмена</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  
+  // Обработчики
+  document.getElementById('cancelPassBtn').onclick = () => {
+    document.getElementById('passwordModal').remove();
+  };
+  
+  document.getElementById('savePassBtn').onclick = async () => {
+    const oldPass = document.getElementById('oldPass').value;
+    const newPass = document.getElementById('newPass').value;
+    const newPass2 = document.getElementById('newPass2').value;
+    const errEl = document.getElementById('passError');
+    const okEl = document.getElementById('passSuccess');
+
+    errEl.textContent = '';
+    okEl.textContent = '';
+
+    if (newPass !== newPass2) {
+      errEl.textContent = 'Пароли не совпадают';
+      return;
+    }
+
+    if (newPass.length < 8 || newPass.length > 20) {
+      errEl.textContent = 'Новый пароль должен быть 8–20 символов';
+      return;
+    }
+
+    // Хэширование (Web Crypto API)
+    const account = JSON.parse(localStorage.getItem(`zid_${zid}`));
+    const encoder = new TextEncoder();
+    const oldHash = await crypto.subtle.importKey(
+      'raw', encoder.encode(oldPass), { name: 'PBKDF2' }, false, ['deriveBits']
+    ).then(key =>
+      crypto.subtle.deriveBits(
+        { name: 'PBKDF2', salt: encoder.encode(account.salt), iterations: 100000, hash: 'SHA-256' },
+        key, 256
+      )
+    ).then(bits => {
+      const arr = Array.from(new Uint8Array(bits));
+      return arr.map(b => b.toString(16).padStart(2, '0')).join('');
+    }).catch(() => null);
+
+    if (oldHash !== account.password_hash) {
+      errEl.textContent = 'Текущий пароль неверен';
+      return;
+    }
+
+    // Генерация нового хэша
+    const newSalt = Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('');
+    const newHash = await crypto.subtle.importKey(
+      'raw', encoder.encode(newPass), { name: 'PBKDF2' }, false, ['deriveBits']
+    ).then(key =>
+      crypto.subtle.deriveBits(
+        { name: 'PBKDF2', salt: encoder.encode(newSalt), iterations: 100000, hash: 'SHA-256' },
+        key, 256
+      )
+    ).then(bits => {
+      const arr = Array.from(new Uint8Array(bits));
+      return arr.map(b => b.toString(16).padStart(2, '0')).join('');
     });
 
-    function bindEvents() {
-      // ✅ ИСПРАВЛЕНО: переключение по data-tab
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          // Снимаем active со всех
-          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-          // Добавляем active нажатой
-          tab.classList.add('active');
-          // Прячем все вкладки
-          document.querySelectorAll('[id^="tab"]').forEach(el => el.classList.add('hidden'));
-          // Показываем нужную по data-tab
-          const target = tab.dataset.tab; // ← register или login
-          document.getElementById('tab' + target.charAt(0).toUpperCase() + target.slice(1)).classList.remove('hidden');
-        });
-      });
+    // Сохранение
+    account.password_hash = newHash;
+    account.salt = newSalt;
+    localStorage.setItem(`zid_${zid}`, JSON.stringify(account));
 
-      document.getElementById('diceBtn').addEventListener('click', generateValidZID);
-      document.getElementById('btnRegister').addEventListener('click', handleRegister);
-      document.getElementById('btnLogin').addEventListener('click', handleLogin);
-      document.getElementById('regZID').addEventListener('input', validateZIDInput);
-      document.getElementById('regPass').addEventListener('input', validatePasswordInput);
-    }
+    okEl.textContent = '✅ Пароль изменён';
+    setTimeout(() => {
+      document.getElementById('passwordModal').remove();
+    }, 1500);
+  };
+}
 
-    function validateZID(zid) {
-      if (zid.length !== 10 || !/^\d{10}$/.test(zid)) {
-        return { valid: false, message: 'Z ID должен содержать ровно 10 цифр' };
-      }
-      const counts = {};
-      for (let d of zid) {
-        counts[d] = (counts[d] || 0) + 1;
-        if (counts[d] > 3) {
-          return { valid: false, message: 'Цифра не может повторяться более 3 раз' };
-        }
-      }
-      return { valid: true };
-    }
-
-    function validateZIDInput() {
-      const input = document.getElementById('regZID');
-      const zid = input.value.replace(/\D/g, '');
-      input.value = zid;
-      const err = document.getElementById('zidError');
-      const res = validateZID(zid);
-      if (!res.valid) {
-        err.textContent = res.message;
-        err.classList.remove('hidden');
-      } else {
-        err.classList.add('hidden');
-      }
-    }
-
-    function validatePasswordInput() {
-      const pass = document.getElementById('regPass').value;
-      const err = document.getElementById('passError');
-      if (pass.length < 8 || pass.length > 20) {
-        err.textContent = 'Пароль должен быть 8–20 символов';
-        err.classList.remove('hidden');
-      } else {
-        err.classList.add('hidden');
-      }
-    }
-
-    function generateZID() {
-      let zid;
-      do {
-        zid = '';
-        const counts = {};
-        for (let i = 0; i < 10; i++) {
-          let d;
-          do {
-            d = Math.floor(Math.random() * 10).toString();
-          } while (counts[d] >= 3);
-          zid += d;
-          counts[d] = (counts[d] || 0) + 1;
-        }
-      } while (zid.length !== 10);
-      return zid;
-    }
-
-    async function generateValidZID() {
-      const btn = document.getElementById('diceBtn');
-      btn.classList.add('dice-spin');
-      btn.disabled = true;
-
-      let zid;
-      let attempts = 0;
-      let isUnique = false;
-
-      do {
-        zid = generateZID();
-        isUnique = !accounts.some(a => a.zid === zid);
-        attempts++;
-        if (!isUnique && attempts < 20) await new Promise(r => setTimeout(r, 50));
-      } while (!isUnique && attempts < 50);
-
-      document.getElementById('regZID').value = zid;
-      validateZIDInput();
-
-      setTimeout(() => {
-        btn.classList.remove('dice-spin');
-        btn.disabled = false;
-      }, 500);
-    }
-
-    async function hashPassword(password, salt = null) {
-      if (!salt) {
-        const arr = new Uint8Array(32);
-        crypto.getRandomValues(arr);
-        salt = Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');
-      }
-
-      const enc = new TextEncoder();
-      const key = await crypto.subtle.importKey(
-        'raw', enc.encode(password), { name: 'PBKDF2' }, false, ['deriveBits']
-      );
-
-      const bits = await crypto.subtle.deriveBits({
-        name: 'PBKDF2',
-        salt: enc.encode(salt),
-        iterations: 100000,
-        hash: 'SHA-256'
-      }, key, 256);
-
-      const hashArr = Array.from(new Uint8Array(bits));
-      const hashHex = hashArr.map(b => b.toString(16).padStart(2, '0')).join('');
-      return { hash: hashHex, salt };
-    }
-
-    async function loadAccounts() {
-      try {
-        const res = await fetch(`https://gist.githubusercontent.com/ваш-ник/${GIST_ID}/raw/zid-users.json`);
-        const data = await res.json();
-        accounts = data.accounts || [];
-      } catch (e) {
-        accounts = [];
-      }
-    }
-
-    async function saveAccountsToGist(pat, newAccount) {
-      accounts.push(newAccount);
-
-      const updateData = {
-        files: {
-          'zid-users.json': {
-            content: JSON.stringify({
-              accounts: accounts,
-              updated_at: new Date().toISOString()
-            }, null, 2)
-          }
-        }
-      };
-
-      const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${pat}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updateData)
-      });
-
-      return res.ok;
-    }
-
-    async function handleRegister() {
-      const name = document.getElementById('regName').value.trim();
-      const surname = document.getElementById('regSurname').value.trim();
-      const patronymic = document.getElementById('regPatronymic').value.trim();
-      const zid = document.getElementById('regZID').value.trim();
-      const pat = document.getElementById('regPAT').value.trim();
-      const pass = document.getElementById('regPass').value;
-      const birth = document.getElementById('regBirth').value;
-      const nationality = document.getElementById('regNationality').value;
-      const genderEl = document.querySelector('input[name="gender"]:checked');
-      const gender = genderEl ? genderEl.value : '';
-
-      if (!name || !surname || !patronymic || !zid || !pat || !pass || !birth || !nationality || !gender) {
-        showError('regError', 'Заполните все поля');
-        return;
-      }
-
-      const zidCheck = validateZID(zid);
-      if (!zidCheck.valid) {
-        showError('zidError', zidCheck.message);
-        return;
-      }
-
-      if (pass.length < 8 || pass.length > 20) {
-        showError('passError', 'Пароль должен быть 8–20 символов');
-        return;
-      }
-
-      if (accounts.some(a => a.zid === zid)) {
-        showError('zidError', 'Этот Z ID уже занят. Нажмите 🎲 для нового.');
-        return;
-      }
-
-      const { hash, salt } = await hashPassword(pass);
-
-      const account = {
-        zid,
-        name,
-        surname,
-        patronymic,
-        birth_date: birth,
-        nationality,
-        gender: ({male: 'Мужской', female: 'Женский', other: 'Другой'})[gender],
-        password_hash: hash,
-        salt,
-        created_at: new Date().toISOString()
-      };
-
-      try {
-        const success = await saveAccountsToGist(pat, account);
-        if (!success) throw new Error();
-
-        localStorage.setItem(`zid_${zid}`, JSON.stringify(account));
-        localStorage.setItem('currentZID', zid);
-
-        alert("✅ Регистрация успешна!");
-        // ✅ ИСПРАВЛЕНО: переключаем вкладку корректно
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelector('.tab[data-tab="login"]').classList.add('active');
-        document.getElementById('tabRegister').classList.add('hidden');
-        document.getElementById('tabLogin').classList.remove('hidden');
-      } catch (e) {
-        showError('regError', 'Не удалось сохранить в Gist. Проверьте PAT.');
-      }
-    }
-
-    async function handleLogin() {
-      const zid = document.getElementById('loginZID').value.trim();
-      const pass = document.getElementById('loginPass').value;
-
-      if (!zid || !pass) {
-        showError('loginError', 'Введите Z ID и пароль');
-        return;
-      }
-
-      let account = accounts.find(a => a.zid === zid);
-      if (!account) {
-        const local = localStorage.getItem(`zid_${zid}`);
-        if (local) account = JSON.parse(local);
-      }
-
-      if (!account) {
-        showError('loginError', 'Аккаунт не найден');
-        return;
-      }
-
-      const { hash } = await hashPassword(pass, account.salt);
-      if (hash !== account.password_hash) {
-        showError('loginError', 'Неверный пароль');
-        return;
-      }
-
-      localStorage.setItem('currentZID', zid);
-      alert(`✅ Добро пожаловать, ${account.name}!`);
-    }
-
-    function showError(id, msg) {
-      const el = document.getElementById(id);
-      el.textContent = msg;
-      el.classList.remove('hidden');
-      setTimeout(() => el.classList.add('hidden'), 5000);
-    }
-  </script>
+// Запуск при загрузке
+document.addEventListener('DOMContentLoaded', loadProfile);
+</script>
 </body>
 </html>
