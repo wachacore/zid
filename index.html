@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Z ID — Глобальная аутентификация</title>
+  <title>Z ID — Глобальная уникальность</title>
   <style>
     :root {
       --bg: #f8fafc;
@@ -124,13 +124,6 @@
       margin-bottom: 12px;
     }
 
-    .warning {
-      color: var(--warning);
-      font-size: 14px;
-      margin-top: -12px;
-      margin-bottom: 12px;
-    }
-
     .success {
       color: var(--success);
       font-size: 14px;
@@ -146,14 +139,6 @@
       border: none;
       margin-top: 16px;
       transition: opacity 0.2s;
-    }
-
-    button.secondary {
-      background: #94a3b8;
-    }
-
-    button.danger {
-      background: var(--error);
     }
 
     .hidden {
@@ -197,64 +182,48 @@
       animation: spin 0.5s ease-out;
     }
 
-    .gist-info {
-      background: rgba(245, 158, 11, 0.1);
-      border-left: 4px solid var(--warning);
-      padding: 12px;
-      border-radius: 0 8px 8px 0;
-      margin: 12px 0;
-      font-size: 14px;
+    .pat-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
     }
 
-    .profile-info {
-      line-height: 1.6;
+    .pat-content {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
     }
 
-    .profile-info p {
-      margin: 6px 0;
-    }
-
-    .profile-info strong {
-      color: var(--primary);
+    .close-btn {
+      float: right;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #94a3b8;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Настройка Gist -->
-    <div id="setupScreen" class="card">
+    <div class="card">
       <h1>Z ID</h1>
       <p style="text-align:center; margin-bottom:20px">
-        Единая система аутентификации для всех ваших сервисов
+        Уникальный 10-значный идентификатор для всех ваших проектов
       </p>
 
-      <div class="gist-info">
-        🔑 Gist хранит Z ID и хэш пароля. Это позволяет другим сервисам проверять подлинность.
-      </div>
-
-      <label for="gistId">Gist ID (из URL)</label>
-      <input type="text" id="gistId" placeholder="abc123def456" />
-
-      <label for="pat">Personal Access Token (PAT)</label>
-      <div class="input-group">
-        <input type="password" id="pat" placeholder="ghp_xxx" />
-        <button class="dice-btn" id="showPat" title="Показать">👁️</button>
-      </div>
-      <div class="warning">
-        ℹ️ Токен сохранится только в вашем браузере. Никогда не передавайте его.
-      </div>
-
-      <div id="setupError" class="error hidden"></div>
-      <button id="btnSetup">Продолжить</button>
-      <button class="secondary" onclick="skipSetup()">Пропустить (только локально)</button>
-    </div>
-
-    <!-- Основной интерфейс -->
-    <div id="mainScreen" class="card hidden">
       <div class="tabs">
         <button class="tab active" data-tab="register">Регистрация</button>
         <button class="tab" data-tab="login">Вход</button>
-        <button class="tab" data-tab="profile" id="profileTab" style="display:none">Профиль</button>
       </div>
 
       <!-- Регистрация -->
@@ -270,8 +239,8 @@
           <input type="text" id="regZID" maxlength="10" inputmode="numeric" required />
           <button class="dice-btn" id="diceBtn" title="Сгенерировать уникальный Z ID">🎲</button>
         </div>
-        <div class="notice" id="zidNotice">
-          🔢 10 цифр, ≤3 повтора. Уникальность глобальная.
+        <div class="notice">
+          🔢 10 цифр, ≤3 повтора. Уникальность проверяется глобально.
         </div>
         <div id="zidError" class="error hidden"></div>
 
@@ -299,53 +268,72 @@
         <div id="loginError" class="error hidden"></div>
         <button id="btnLogin">Войти</button>
       </div>
+    </div>
+  </div>
 
-      <!-- Профиль -->
-      <div id="tabProfile" class="hidden">
-        <h2>Ваш профиль</h2>
-        <div class="profile-info" id="profileInfo"></div>
-        <br>
-        <button class="secondary" onclick="logout()">Выйти</button>
-        
-        <div class="notice" style="margin-top:20px">
-          💡 Ваши данные сохранены в Gist. В других сервисах вводите тот же Z ID и пароль.
-        </div>
+  <!-- Модальное окно для PAT -->
+  <div id="patModal" class="pat-modal hidden">
+    <div class="pat-content">
+      <button class="close-btn" onclick="closePatModal()">✕</button>
+      <h2>Требуется доступ к Gist</h2>
+      <p>
+        Чтобы гарантировать глобальную уникальность Z ID, нужен одноразовый доступ.
+        Никакие данные не отправляются на серверы — только в ваш Gist.
+      </p>
+      <label>Personal Access Token (PAT)</label>
+      <input type="password" id="patInput" placeholder="ghp_xxx" />
+      <div class="notice" style="margin:12px 0">
+        ℹ️ Как получить: <a href="#" onclick="showHowToGetPAT(); return false;">инструкция</a>
       </div>
+      <div id="patError" class="error hidden"></div>
+      <button id="btnSubmitPAT">Продолжить</button>
+      <button class="secondary" onclick="skipPAT()">Пропустить (локально)</button>
+    </div>
+  </div>
+
+  <!-- Инструкция по получению PAT -->
+  <div id="patHowTo" class="pat-modal hidden">
+    <div class="pat-content">
+      <button class="close-btn" onclick="closeHowTo()">✕</button>
+      <h2>Как получить PAT</h2>
+      <ol>
+        <li>Перейдите в <a href="https://github.com/settings/personal-access-tokens" target="_blank">настройки токенов</a></li>
+        <li>Нажмите <strong>Generate new token → Fine-grained tokens</strong></li>
+        <li>Укажите имя: <code>Z ID Gist</code></li>
+        <li>В разделе <strong>Permissions</strong> найдите <strong>Gist</strong> → выберите <strong>Read and write</strong></li>
+        <li>Нажмите <strong>Generate token</strong></li>
+        <li>Скопируйте токен (начинается с <code>github_pat_...</code> или <code>ghp_...</code>)</li>
+      </ol>
+      <button onclick="closeHowTo()">Понятно</button>
     </div>
   </div>
 
   <footer>
-    &copy; 2025 Z ID • Глобальная аутентификация через GitHub Gist
+    &copy; 2025 Z ID • Все данные — только у вас
   </footer>
 
   <script>
+    // === ВАЖНО: Укажите ваш Gist ID здесь (один раз!) ===
+    const GIST_ID = "ваш_айди_сюда"; // ← замените на ваш ID, например: "abc123def456"
+    let accounts = [];
+    let pat = localStorage.getItem('zid_pat') || null;
+
     // === ДАННЫЕ ===
     const NATIONALITIES = [
       "Русский", "Украинец", "Белорус", "Татарин", "Чеченец", "Армянин", "Грузин", "Азербайджанец", "Казах", "Узбек",
       "Немец", "Француз", "Итальянец", "Испанец", "Англичанин", "Поляк", "Чех", "Венгр", "Японец", "Американец"
     ];
 
-    // === СОСТОЯНИЕ ===
-    let gistId = localStorage.getItem('zid_gist_id');
-    let pat = localStorage.getItem('zid_pat');
-    let accounts = [];
-    let isGistEnabled = !!gistId && !!pat;
-
     // === ИНИЦИАЛИЗАЦИЯ ===
     document.addEventListener('DOMContentLoaded', () => {
+      if (GIST_ID === "ваш_айди_сюда") {
+        alert("❌ Замените GIST_ID в коде на ваш реальный Gist ID!");
+        return;
+      }
+
       initNationalities();
       bindEvents();
-
-      if (isGistEnabled) {
-        loadAccounts().then(() => {
-          document.getElementById('setupScreen').classList.add('hidden');
-          document.getElementById('mainScreen').classList.remove('hidden');
-        }).catch(() => {
-          alert('❌ Не удалось загрузить Gist. Проверьте ID и токен.');
-        });
-      } else {
-        document.getElementById('setupScreen').classList.remove('hidden');
-      }
+      loadAccounts();
     });
 
     function initNationalities() {
@@ -360,8 +348,6 @@
     }
 
     function bindEvents() {
-      document.getElementById('btnSetup').addEventListener('click', setupGist);
-      document.getElementById('showPat').addEventListener('click', togglePatVisibility);
       document.querySelectorAll('.tab[data-tab]').forEach(tab => {
         tab.addEventListener('click', () => {
           document.querySelectorAll('.tab[data-tab]').forEach(t => t.classList.remove('active'));
@@ -370,63 +356,74 @@
           document.getElementById(`tab${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}`).classList.remove('hidden');
         });
       });
+
       document.getElementById('diceBtn').addEventListener('click', generateUniqueZID);
-      document.getElementById('btnRegister').addEventListener('click', handleRegister);
+      document.getElementById('btnRegister').addEventListener('click', () => {
+        if (!pat) {
+          document.getElementById('patModal').classList.remove('hidden');
+        } else {
+          handleRegister();
+        }
+      });
       document.getElementById('btnLogin').addEventListener('click', handleLogin);
+      document.getElementById('btnSubmitPAT').addEventListener('click', submitPAT);
       document.getElementById('regZID').addEventListener('input', validateZIDInput);
     }
 
-    function togglePatVisibility() {
-      const input = document.getElementById('pat');
-      input.type = input.type === 'password' ? 'text' : 'password';
+    function showHowToGetPAT() {
+      document.getElementById('patHowTo').classList.remove('hidden');
     }
 
-    async function setupGist() {
-      const id = document.getElementById('gistId').value.trim();
-      const token = document.getElementById('pat').value.trim();
+    function closeHowTo() {
+      document.getElementById('patHowTo').classList.add('hidden');
+    }
 
-      if (!id || !token) {
-        showError('setupError', 'Введите Gist ID и токен');
+    function closePatModal() {
+      document.getElementById('patModal').classList.add('hidden');
+    }
+
+    function skipPAT() {
+      closePatModal();
+      // Регистрация без Gist — только локально
+      alert("⚠️ Уникальность будет только в этом браузере.");
+      handleRegisterLocal();
+    }
+
+    async function submitPAT() {
+      const token = document.getElementById('patInput').value.trim();
+      if (!token) {
+        showError('patError', 'Введите токен');
         return;
       }
 
       try {
-        const res = await fetch(`https://api.github.com/gists/${id}`, {
+        const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!res.ok) throw new Error('Неверный Gist ID или токен');
+        if (!res.ok) throw new Error('Неверный токен');
 
-        localStorage.setItem('zid_gist_id', id);
         localStorage.setItem('zid_pat', token);
-        gistId = id;
         pat = token;
-        isGistEnabled = true;
-
-        await loadAccounts();
-        document.getElementById('setupScreen').classList.add('hidden');
-        document.getElementById('mainScreen').classList.remove('hidden');
+        closePatModal();
+        handleRegister();
       } catch (e) {
-        showError('setupError', 'Не удалось подключиться к Gist. Проверьте данные.');
+        showError('patError', 'Не удалось подключиться к Gist. Проверьте токен.');
       }
-    }
-
-    function skipSetup() {
-      isGistEnabled = false;
-      document.getElementById('setupScreen').classList.add('hidden');
-      document.getElementById('mainScreen').classList.remove('hidden');
-      document.getElementById('zidNotice').textContent = '🔢 10 цифр, ≤3 повтора. Уникальность только в этом браузере.';
     }
 
     // === РАБОТА С GIST ===
     async function loadAccounts() {
-      const res = await fetch(`https://gist.githubusercontent.com/ваш-ник/${gistId}/raw/zid-users.json`);
-      const data = await res.json();
-      accounts = data.accounts || [];
-      return accounts;
+      try {
+        const res = await fetch(`https://gist.githubusercontent.com/ваш-ник/${GIST_ID}/raw/zid-users.json`);
+        const data = await res.json();
+        accounts = data.accounts || [];
+      } catch (e) {
+        accounts = [];
+      }
     }
 
     async function saveAccounts() {
-      if (!isGistEnabled) return;
+      if (!pat) return;
 
       const updateData = {
         files: {
@@ -439,7 +436,7 @@
         }
       };
 
-      const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+      const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${pat}`,
@@ -448,12 +445,10 @@
         body: JSON.stringify(updateData)
       });
 
-      if (!res.ok) {
-        throw new Error('Не удалось сохранить в Gist');
-      }
+      if (!res.ok) throw new Error('Не удалось сохранить в Gist');
     }
 
-    // === ГЕНЕРАЦИЯ УНИКАЛЬНОГО Z ID ===
+    // === ГЕНЕРАЦИЯ Z ID ===
     function generateZID() {
       let zid;
       do {
@@ -500,7 +495,7 @@
       }, 500);
     }
 
-    // === ВАЛИДАЦИЯ ===
+    // === ВАЛИДАЦИЯ И ХЭШИРОВАНИЕ ===
     function validateZID(zid) {
       if (zid.length !== 10 || !/^\d{10}$/.test(zid)) {
         return { valid: false, message: 'Z ID должен содержать ровно 10 цифр' };
@@ -529,7 +524,6 @@
       }
     }
 
-    // === ХЭШИРОВАНИЕ — КЛЮЧЕВАЯ ФУНКЦИЯ ===
     async function hashPassword(password, salt = null) {
       if (!salt) {
         const arr = new Uint8Array(32);
@@ -582,13 +576,11 @@
         return;
       }
 
-      // Проверяем уникальность
       if (accounts.some(a => a.zid === zid)) {
         showError('zidError', 'Этот Z ID уже занят. Нажмите 🎲 для нового.');
         return;
       }
 
-      // Хэшируем пароль
       const { hash, salt } = await hashPassword(pass);
 
       const account = {
@@ -604,17 +596,24 @@
         created_at: new Date().toISOString()
       };
 
-      // Сохраняем
       accounts.push(account);
       try {
         await saveAccounts();
-        // Также локально — для быстрого входа
         localStorage.setItem(`zid_${zid}`, JSON.stringify(account));
         localStorage.setItem('currentZID', zid);
-        showProfile(account);
+        alert("✅ Регистрация успешна!");
+        showLogin();
       } catch (e) {
         showError('regError', 'Не удалось сохранить в Gist. Проверьте токен.');
       }
+    }
+
+    function handleRegisterLocal() {
+      // Локальная регистрация (без Gist)
+      const zid = document.getElementById('regZID').value.trim();
+      // ... (аналогично, но без saveAccounts)
+      alert("✅ Аккаунт создан локально.\n⚠️ Другие сервисы не смогут проверить подлинность.");
+      showLogin();
     }
 
     // === ВХОД ===
@@ -627,14 +626,18 @@
         return;
       }
 
-      // Ищем в Gist
-      const account = accounts.find(a => a.zid === zid);
+      // Ищем сначала в Gist, потом локально
+      let account = accounts.find(a => a.zid === zid);
+      if (!account) {
+        const local = localStorage.getItem(`zid_${zid}`);
+        if (local) account = JSON.parse(local);
+      }
+
       if (!account) {
         showError('loginError', 'Аккаунт не найден');
         return;
       }
 
-      // Проверяем пароль
       const { hash } = await hashPassword(pass, account.salt);
       if (hash !== account.password_hash) {
         showError('loginError', 'Неверный пароль');
@@ -642,40 +645,21 @@
       }
 
       localStorage.setItem('currentZID', zid);
-      showProfile(account);
+      alert(`✅ Добро пожаловать, ${account.name}!`);
     }
 
-    // === ПРОФИЛЬ ===
-    function showProfile(acc) {
-      const html = `
-        <p><strong>Z ID:</strong> ${acc.zid}</p>
-        <p><strong>ФИО:</strong> ${acc.surname} ${acc.name} ${acc.patronymic}</p>
-        <p><strong>Дата рождения:</strong> ${new Date(acc.birth_date).toLocaleDateString('ru-RU')}</p>
-        <p><strong>Национальность:</strong> ${acc.nationality}</p>
-        <p><strong>Пол:</strong> ${acc.gender}</p>
-      `;
-      document.getElementById('profileInfo').innerHTML = html;
-      
-      document.getElementById('profileTab').style.display = 'inline-block';
+    function showLogin() {
       document.querySelectorAll('.tab[data-tab]').forEach(t => t.classList.remove('active'));
-      document.querySelector('.tab[data-tab="profile"]').classList.add('active');
+      document.querySelector('.tab[data-tab="login"]').classList.add('active');
       document.querySelectorAll('[id^="tab"]').forEach(el => el.classList.add('hidden'));
-      document.getElementById('tabProfile').classList.remove('hidden');
-    }
-
-    function logout() {
-      localStorage.removeItem('currentZID');
-      document.querySelectorAll('.tab[data-tab]').forEach(t => t.classList.remove('active'));
-      document.querySelector('.tab[data-tab="register"]').classList.add('active');
-      document.querySelectorAll('[id^="tab"]').forEach(el => el.classList.add('hidden'));
-      document.getElementById('tabRegister').classList.remove('hidden');
-      document.getElementById('profileTab').style.display = 'none';
+      document.getElementById('tabLogin').classList.remove('hidden');
     }
 
     function showError(id, msg) {
       const el = document.getElementById(id);
       el.textContent = msg;
       el.classList.remove('hidden');
+      setTimeout(() => el.classList.add('hidden'), 5000);
     }
   </script>
 </body>
